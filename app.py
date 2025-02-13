@@ -20,6 +20,8 @@ app = Flask(__name__)
 
 @app.route('/', methods = ['GET', 'POST'])
 def main():
+    
+    
     if request.method == 'POST':
         songs = song_search(request.form.get('song'))
         return(render_template('main.html', songs=songs))
@@ -66,7 +68,7 @@ payload = {
 
 client_secret = jwt.encode(payload, private_key, algorithm='ES256', headers=headers)
 print(client_secret)
-
+"""
 data = {
     client_id: 'com.ethan1',
     client_secret: 'eyJhbGciOiJFUzI1NiIsImtpZCI6Ikw5RzU1SlQ2QVUiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiIyWVVRNllWNkRGIiwiaWF0IjoxNzM5NDQyOTUyLCJleHAiOjE3Mzk0NDY1NTIsImF1ZCI6Imh0dHBzOi8vYXBwbGVpZC5hcHBsZS5jb20iLCJzdWIiOiJjb20uZXRoYW4xIn0.BsCls_lCUTr3hr4lRkE1h1SGOdlL8JqlE_8IJNeoc5hin0V4x3wRTNkX_Ud5956OPEMiwElWEiBUh_e6NDkLGw',
@@ -77,8 +79,12 @@ data = {
 
 response = requests.post('http://POST', data=data)
 response = requests.post('https://appleid.apple.com/auth/token', data=data)
-'''
+
 response = requests.post(url, headers=headers, json=data)
+"""
+with open("AuthKey_L9G55JT6AU (1).p8.txt", "rb") as file:
+    secret_key = file.read()
+
 am = applemusicpy.client.AppleMusic(secret_key, key_id, team_id)
 def song_search(song):
     raw_results = am.search(song, types=['songs'], limit=5)
@@ -87,7 +93,7 @@ def song_search(song):
         refined_results.append(raw_results["results"]["songs"]["data"][i]["attributes"]["name"])
     print(refined_results)
     return refined_results
-'''
+
 
 if __name__ == '__main__':
     app.run(debug=True)
