@@ -20,7 +20,7 @@
     </form>
     <ol>
         {%for song in songs%}
-            <li>{{song}}</li>
+            <li>{{song}}</li> <button type="button" onclick="song_favorited = true" name={{song}}>Add to favorites</button>
         {%endfor%}
     </ol>
     <button id="apple-signin-button" onclick="signInWithApple()"> Sign in with Apple</button>
