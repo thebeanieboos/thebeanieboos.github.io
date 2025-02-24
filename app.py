@@ -1,8 +1,11 @@
 # to update website run: set FLASK_APP=app.py
 # to actually start the website run: flask run
+
+#import modules
 import subprocess
 import sys
 import pycurl
+import sqlite3
 subprocess.check_call([sys.executable, "-m", "pip", "install", "requests"])
 
 from flask import Flask, flash, redirect, render_template, request, session
@@ -21,14 +24,17 @@ app = Flask(__name__)
 @app.route('/', methods = ['GET', 'POST'])
 def main():
     
-    
+    #Get information from and pass it back to html page
     if request.method == 'POST':
         songs = song_search(request.form.get('song'))
+        favorited = request.form.get('song_favorited')
+        print(favorited)
         return(render_template('main.html', songs=songs))
     else:
         return render_template('main.html')
-    
-#info to generate token 
+
+
+#Info to generate token 
 time_now = datetime.datetime.now()
 time_expired = datetime.datetime.now() + datetime.timedelta(hours = 1)
 alg = "ES256"
@@ -38,6 +44,12 @@ key_id = 'L9G55JT6AU'
 team_id = '2YUQ6YV6DF'
 client_id = 'com.ethan1'
 
+#Initialize apple music python module
+with open("AuthKey_L9G55JT6AU (1).p8.txt", "rb") as file:
+    secret_key = file.read()
+am = applemusicpy.client.AppleMusic(secret_key, key_id, team_id)
+
+#Create public key
 with open(private_key_path, "rb") as key_file:
     private_key = serialization.load_pem_private_key(
         key_file.read(),
@@ -54,6 +66,7 @@ public_pem = public_key.public_bytes(
 
 print(public_pem.decode('utf-8'))
 
+#Store information
 headers = {
     'kid': key_id,
 }
@@ -82,11 +95,9 @@ response = requests.post('https://appleid.apple.com/auth/token', data=data)
 
 response = requests.post(url, headers=headers, json=data)
 """
-with open("AuthKey_L9G55JT6AU (1).p8.txt", "rb") as file:
-    secret_key = file.read()
 
-am = applemusicpy.client.AppleMusic(secret_key, key_id, team_id)
 def song_search(song):
+    #function that takes the name of a song and strips all the unnecessary info to return only the name of the song
     raw_results = am.search(song, types=['songs'], limit=5)
     refined_results = []
     for i in range(len(raw_results["results"]["songs"]["data"])):
